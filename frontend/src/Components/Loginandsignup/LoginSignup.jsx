@@ -9,13 +9,14 @@ const LoginSignup = () => {
         username: '',
         email: '',
         password: '',
-        rememberMe: false // Add rememberMe state
+        rememberMe: false,
     });
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
     const [success, setSuccess] = useState(null);
-    
-    const navigate = useNavigate(); 
+    const [passwordVisible, setPasswordVisible] = useState(false); 
+
+    const navigate = useNavigate();
 
     const toggleForm = () => {
         setIsRegister(!isRegister);
@@ -28,23 +29,23 @@ const LoginSignup = () => {
         const { name, value, type, checked } = e.target;
         setFormData({
             ...formData,
-            [name]: type === 'checkbox' ? checked : value // Handle checkbox value
+            [name]: type === 'checkbox' ? checked : value
         });
     };
 
     const validate = () => {
         let errors = {};
-        
+
         if (isRegister && !formData.username.trim()) {
             errors.username = "Username is required";
         }
-        
+
         if (!formData.email.trim()) {
             errors.email = "Email is required";
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             errors.email = "Email is invalid";
         }
-        
+
         if (!formData.password) {
             errors.password = "Password is required";
         } else if (formData.password.length < 6) {
@@ -68,7 +69,6 @@ const LoginSignup = () => {
 
             setError(null);
 
-            // If rememberMe is checked, store email and password in localStorage
             if (formData.rememberMe) {
                 localStorage.setItem('email', formData.email);
                 localStorage.setItem('password', formData.password);
@@ -80,20 +80,12 @@ const LoginSignup = () => {
             if (isRegister) {
                 setTimeout(() => {
                     setIsRegister(false);
-                }, 1000); 
-            }else{
+                }, 1000);
+            } else {
                 setTimeout(() => {
-                    navigate('/Dahboard');
-                }, 1000); 
+                    navigate('/Dashboard');
+                }, 1000);
             }
-
-            // if (isRegister) {
-            //     navigate('/login');
-            // } else {
-            //     navigate('/dashboard');
-            // }
-
-
 
         } catch (error) {
             setError(error.response?.data?.message || 'An error occurred. Please try again.');
@@ -101,7 +93,6 @@ const LoginSignup = () => {
         }
     };
 
-    // Load saved credentials from localStorage
     useState(() => {
         const savedEmail = localStorage.getItem('email');
         const savedPassword = localStorage.getItem('password');
@@ -148,15 +139,22 @@ const LoginSignup = () => {
                         />
                         {validationErrors.email && <p className="text-red-500 text-sm">{validationErrors.email}</p>}
                     </div>
-                    <div>
+                    <div className="relative">
                         <input
-                            type="password"
+                            type={passwordVisible ? 'text' : 'password'} // Toggle input type
                             name="password"
                             placeholder="Enter Password"
                             value={formData.password}
                             onChange={handleChange}
                             className={`text-lg px-4 py-2 border-b ${validationErrors.password ? 'border-red-500' : 'border-gray-700'} bg-transparent focus:outline-none`}
                         />
+                        <button
+                            type="button"
+                            onClick={() => setPasswordVisible(!passwordVisible)} // Toggle visibility
+                            className="absolute right-0 top-0 mt-2 mr-4 text-gray-700"
+                        >
+                            {passwordVisible ? 'Hide' : 'Show'}
+                        </button>
                         {validationErrors.password && <p className="text-red-500 text-sm">{validationErrors.password}</p>}
                     </div>
                     {!isRegister && (
@@ -181,7 +179,7 @@ const LoginSignup = () => {
                             <a href="/forgot-password"
                                 type="button"
                                 className="w-72 h-14 bg-transparent text-black border border-none rounded-lg"
-                                onClick={() => {}}
+                                onClick={() => { }}
                             >
                                 Forgot password?
                             </a>
